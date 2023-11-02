@@ -14,15 +14,18 @@ import javax.swing.JPanel;
 
 public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private SnakeGame snakeGame;
-
+    private int score;
+    
     
     public SnakeGamePanel() {
         snakeGame = new SnakeGame();
         setPreferredSize(new Dimension(SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE,
-                SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE));
+        SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE));
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
+
+  
 
         Thread gameThread = new Thread(this);
         gameThread.start();
@@ -32,6 +35,12 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         draw(g);
+        drawScore(g);
+    }
+    private void drawScore(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Score: " + score, 10, 20); // Display the score at (10, 20) coordinates
     }
 
     private void draw(Graphics g) {
