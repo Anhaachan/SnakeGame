@@ -3,13 +3,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,6 +22,7 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private int score;
     private boolean isGameOver;
     private PlayerDAO playerDAO = new PlayerDAO();
+    private ImageIcon backgroundImage;
 
     public SnakeGamePanel() {
         initializeGame();
@@ -30,7 +34,10 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
 
         Thread gameThread = new Thread(this);
         gameThread.start();
-    }
+        String imagePath = "./assets/background.jpg";
+        System.out.println("Image Path: " + ClassLoader.getSystemResource(imagePath));
+        backgroundImage = new ImageIcon(ClassLoader.getSystemResource(imagePath));
+           }
 
     private void initializeGame() {
         snakeGame = new SnakeGame();
@@ -41,8 +48,19 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+        
         draw(g);
         drawScore(g);
+        drawFoodImage(g);
+    }
+
+    private void drawFoodImage(Graphics g) {
+        Point food = snakeGame.getFood();
+        Image foodImage = snakeGame.getFoodImageIcon().getImage();
+        g.drawImage(foodImage, food.x * SnakeGame.CELL_SIZE, food.y * SnakeGame.CELL_SIZE,
+                SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
     }
 
     private void drawScore(Graphics g) {
@@ -62,24 +80,35 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
 
     private void drawSnake(Graphics g) {
         ArrayList<Point> snake = snakeGame.getSnake();
+    
         for (int i = 0; i < snake.size(); i++) {
             Point p = snake.get(i);
             if (i == 0) {
-                g.setColor(Color.YELLOW);
+                BufferedImage snakeHeadImage = snakeGame.getSnakeHeadImage(snakeGame.getDirection());
+                if (snakeHeadImage != null) {
+                    g.drawImage(snakeHeadImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
+                            SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
+                }
             } else {
-                g.setColor(Color.GREEN);
+                if (i % 2 == 0) {
+                    g.setColor(Color.GREEN);
+                } else {
+                    g.setColor(Color.YELLOW);
+                }
+                g.fillRect(p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
+                        SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE);
             }
-            g.fillRect(p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
-                    SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE);
         }
     }
-
-    private void drawFood(Graphics g) {
+       private void drawFood(Graphics g) {
         Point food = snakeGame.getFood();
-        g.setColor(Color.RED);
-        g.fillRect(food.x * SnakeGame.CELL_SIZE, food.y * SnakeGame.CELL_SIZE,
-                SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE);
+        BufferedImage foodImage = snakeGame.getFoodImage();
+
+        // Draw the food image with transparency
+        g.drawImage(foodImage, food.x * SnakeGame.CELL_SIZE, food.y * SnakeGame.CELL_SIZE,
+                SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
     }
+    
 
     private void gameOver(Graphics g) {
         String playerName = snakeGame.getPlayerName();

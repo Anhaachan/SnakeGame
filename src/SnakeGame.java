@@ -2,9 +2,13 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,6 +25,13 @@ public class SnakeGame {
     private Direction direction;
     private boolean isGameOver;
     private String playerName;
+    private ImageIcon foodImageIcon;
+
+    private BufferedImage foodImage;
+    private BufferedImage snakeHeadUpImage;
+    private BufferedImage snakeHeadDownImage;
+    private BufferedImage snakeHeadLeftImage;
+    private BufferedImage snakeHeadRightImage;
 
     enum Direction {
         UP, DOWN, LEFT, RIGHT
@@ -34,17 +45,26 @@ public class SnakeGame {
         direction = Direction.RIGHT;
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
-
-
+        foodImageIcon = new ImageIcon(ClassLoader.getSystemResource("./assets/food.png"));
+        try {
+            foodImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/food.png"));
+            snakeHeadUpImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadUpImage.png"));
+            snakeHeadDownImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadDownImage.png"));
+            snakeHeadLeftImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadLeftImage.png"));
+            snakeHeadRightImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadRightImage.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         JTextField playerNameField = new JTextField();
 
         playerNameField.addKeyListener(new KeyListener() {
- 
+
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (!(Character.isLetter(c) && (Character.isLowerCase(c) || Character.isUpperCase(c))) || playerNameField.getText().length() > 20) {
+                if (!(Character.isLetter(c) && (Character.isLowerCase(c) || Character.isUpperCase(c)))
+                        || playerNameField.getText().length() > 20) {
                     e.consume(); // Ignore the event
                 }
             }
@@ -61,27 +81,55 @@ public class SnakeGame {
         });
         panel.add(new JLabel("Enter your name:"));
         panel.add(playerNameField);
-        
+
         int result = JOptionPane.showOptionDialog(null, panel, "Snake Game",
-                JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"OK"}, null);
-        
-        if (result == JOptionPane.OK_OPTION && !playerNameField.getText().isEmpty() ) {
+                JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[] { "OK" }, null);
+
+        if (result == JOptionPane.OK_OPTION && !playerNameField.getText().isEmpty()) {
             playerName = playerNameField.getText();
-        }
-         else {
-            playerName = "Player"; 
+        } else {
+            playerName = "Player";
         }
 
         isGameOver = false;
     }
+
     
+    public Direction getDirection() {
+        return direction;
+    }
+    
+    public BufferedImage getSnakeHeadImage(Direction direction) {
+        switch (direction) {
+            case UP:
+                return snakeHeadUpImage;
+            case DOWN:
+                return snakeHeadDownImage;
+            case LEFT:
+                return snakeHeadLeftImage;
+            case RIGHT:
+                return snakeHeadRightImage;
+            default:
+                return null;
+        }
+    }
+
+    public ImageIcon getFoodImageIcon() {
+        return foodImageIcon;
+    }
+
+    public BufferedImage getFoodImage() {
+        return foodImage;
+    }
 
     public String getPlayerName() {
         return playerName;
     }
-public void setPlayerName(String playerName) {
-    this.playerName = playerName;
-}
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public int getFoodsEaten() {
         return foodsEaten;
     }
