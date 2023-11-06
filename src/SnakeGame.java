@@ -12,8 +12,6 @@ public class SnakeGame {
     private Point food;
     private Direction direction;
     private boolean isGameOver;
-    private int score;
-
     enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -58,8 +56,6 @@ public class SnakeGame {
                 if (foodsEaten % 10 == 0) {
                     DELAY -= 10; 
                 }
-
-                score = foodsEaten;
             } else {
                 snake.add(0, newHead);
                 snake.remove(snake.size() - 1);

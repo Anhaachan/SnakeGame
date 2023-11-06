@@ -143,5 +143,6 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 }
