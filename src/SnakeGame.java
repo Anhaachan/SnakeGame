@@ -1,17 +1,25 @@
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class SnakeGame {
     static final int GRID_SIZE = 20;
     static final int CELL_SIZE = 20;
     static int DELAY = 150;
     private int foodsEaten;
-
+    private Player player;
     private ArrayList<Point> snake;
     private Point food;
     private Direction direction;
     private boolean isGameOver;
+    private String playerName;
+
     enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -22,11 +30,36 @@ public class SnakeGame {
         snake.add(new Point(5, 5));
         food = new Point(15, 15);
         direction = Direction.RIGHT;
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
+        JTextField playerNameField = new JTextField();
+        panel.add(new JLabel("Enter your name:"));
+        panel.add(playerNameField);
+        
+        int result = JOptionPane.showOptionDialog(null, panel, "Snake Game",
+                JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"OK"}, "Player");
+        
+        if (result == JOptionPane.OK_OPTION && !playerNameField.getText().isEmpty()) {
+            playerName = playerNameField.getText();
+        }
+         else {
+            playerName = "Player"; 
+        }
+
         isGameOver = false;
     }
+    
+
+    public String getPlayerName() {
+        return playerName;
+    }
+public void setPlayerName(String playerName) {
+    this.playerName = playerName;
+}
     public int getFoodsEaten() {
         return foodsEaten;
     }
+
     public void move() {
         if (!isGameOver) {
             Point head = snake.get(0);
@@ -54,7 +87,7 @@ public class SnakeGame {
                 foodsEaten++;
 
                 if (foodsEaten % 10 == 0) {
-                    DELAY -= 10; 
+                    DELAY -= 10;
                 }
             } else {
                 snake.add(0, newHead);
@@ -85,11 +118,11 @@ public class SnakeGame {
 
     private void spawnFood() {
         Random random = new Random();
-        int x,y;
+        int x, y;
         do {
-        	x = random.nextInt(GRID_SIZE);
-        	y = random.nextInt(GRID_SIZE);
-        }while(snake.contains(new Point(x,y)));
+            x = random.nextInt(GRID_SIZE);
+            y = random.nextInt(GRID_SIZE);
+        } while (snake.contains(new Point(x, y)));
         food.setLocation(x, y);
     }
 
