@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -7,9 +6,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,26 +17,25 @@ import javax.swing.JPanel;
 public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private SnakeGame snakeGame;
     private int score;
-   private Boolean  isScoreSaved = false;
-   private Boolean isGameOver;
-   private Player player;
-   private PlayerDAO playerDAO = new PlayerDAO();
+    private boolean isGameOver;
+    private PlayerDAO playerDAO = new PlayerDAO();
 
-   public SnakeGamePanel() {
-       snakeGame = new SnakeGame();
-       setPreferredSize(new Dimension(SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE,
-       SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE));
-       setBackground(Color.BLACK);
-       setFocusable(true);
-       addKeyListener(this);
-               isGameEnded = false;
+    public SnakeGamePanel() {
+        initializeGame();
+        setPreferredSize(new Dimension(SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE,
+                SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE));
+        setBackground(Color.BLACK);
+        setFocusable(true);
+        addKeyListener(this);
 
-       
-   
-        
         Thread gameThread = new Thread(this);
         gameThread.start();
-        
+    }
+
+    private void initializeGame() {
+        snakeGame = new SnakeGame();
+        isGameOver = false;
+        score = 0;
     }
 
     @Override
@@ -50,14 +48,12 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private void drawScore(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Score: " + score, 10, 20); // Display the score at (10, 20) coordinates
+        g.drawString("Score: " + score, 10, 20);
     }
 
     private void draw(Graphics g) {
-        if (snakeGame.isGameOver()) {
+        if (isGameOver) {
             gameOver(g);
-
-    
         } else {
             drawSnake(g);
             drawFood(g);
@@ -90,25 +86,25 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         String scoreText = "Score: " + score;
         String gameOverMessage = "GAME OVER!";
         String restartMessage = "Press R to restart or Q to quit.";
-    
+
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 24));
-    
+
         // Calculate text widths and heights
         int gameOverWidth = g.getFontMetrics().stringWidth(gameOverMessage);
         int scoreWidth = g.getFontMetrics().stringWidth(scoreText);
         int restartWidth = g.getFontMetrics().stringWidth(restartMessage);
-    
+
         int maxWidth = Math.max(Math.max(gameOverWidth, scoreWidth), restartWidth);
         int panelWidth = SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE;
         int panelHeight = SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE;
         int x = (panelWidth - maxWidth) / 2;
         int y = (panelHeight - 100) / 2; // Vertical center position
-    
+
         // Draw game over message
         g.drawString(gameOverMessage, x, y);
         y += 30;
-    
+
         // Draw wrapped player name
         FontMetrics fontMetrics = g.getFontMetrics();
         String wrappedPlayerName = wrapText(playerName, fontMetrics, maxWidth);
@@ -119,18 +115,33 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
             g.drawString(line, playerNameX, y);
             y += 30; // Increase vertical position for the next line
         }
-    
+
         // Draw score and restart message
         g.drawString("Score: " + score, x, y);
         y += 30;
         g.drawString(restartMessage, x, y);
-}
+
+        List<Player> highScores = playerDAO.getAllPlayers();
+        highScores.sort(Comparator.comparingInt(Player::getScore).reversed());
+
+        int numHighScoresToDisplay = Math.min(3, highScores.size());
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        int startY = y + 50;
+
+        for (int i = 0; i < numHighScoresToDisplay; i++) {
+            Player highScorePlayer = highScores.get(i);
+            g.drawString(
+                    "High Score #" + (i + 1) + ": " + highScorePlayer.getName() + " - " + highScorePlayer.getScore(), x,
+                    startY);
+            startY += 30;
+        }
+    }
 
     private String wrapText(String text, FontMetrics fontMetrics, int maxWidth) {
         StringBuilder wrappedText = new StringBuilder();
         StringBuilder currentLine = new StringBuilder();
         String[] words = text.split("\\s+");
-    
+
         for (String word : words) {
             int wordWidth = fontMetrics.stringWidth(currentLine + word);
             if (wordWidth <= maxWidth) {
@@ -140,56 +151,41 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
                 currentLine = new StringBuilder(word).append(" ");
             }
         }
-    
+
         wrappedText.append(currentLine);
         return wrappedText.toString();
     }
-    
-    
-   
-    
-    
+
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.VK_UP:
-                snakeGame.setDirection(SnakeGame.Direction.UP);
-                break;
-            case KeyEvent.VK_DOWN:
-                snakeGame.setDirection(SnakeGame.Direction.DOWN);
-                break;
-            case KeyEvent.VK_LEFT:
-                snakeGame.setDirection(SnakeGame.Direction.LEFT);
-                break;
-            case KeyEvent.VK_RIGHT:
-                snakeGame.setDirection(SnakeGame.Direction.RIGHT);
-                break;
-            case KeyEvent.VK_R:
-                snakeGame = new SnakeGame();
-                break;
-            case KeyEvent.VK_Q:
+        if (isGameOver) {
+            if (keyCode == KeyEvent.VK_R) {
+                initializeGame();
+                isGameOver = false;
+            } else if (keyCode == KeyEvent.VK_Q) {
                 int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit the game?",
                         "Quit Game", JOptionPane.YES_NO_OPTION);
                 if (response == JOptionPane.YES_OPTION) {
                     System.exit(0);
                 }
-                break;
-
+            }
+        } else {
+            switch (keyCode) {
+                case KeyEvent.VK_UP:
+                    snakeGame.setDirection(SnakeGame.Direction.UP);
+                    break;
+                case KeyEvent.VK_DOWN:
+                    snakeGame.setDirection(SnakeGame.Direction.DOWN);
+                    break;
+                case KeyEvent.VK_LEFT:
+                    snakeGame.setDirection(SnakeGame.Direction.LEFT);
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    snakeGame.setDirection(SnakeGame.Direction.RIGHT);
+                    break;
+            }
         }
-    }
-
-    private boolean isGameEnded;
-
-   
-    // ... existing methods ...
-
-    public void endGame() {
-        isGameEnded = true;
-    }
-
-    public boolean isGameEnded() {
-        return isGameEnded;
     }
 
     @Override
@@ -202,21 +198,25 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
 
     @Override
     public void run() {
-        while (!snakeGame.isGameOver()) {
-            snakeGame.move();
-            score = snakeGame.getFoodsEaten();
-            repaint();
+        while (true) {
+            if (!isGameOver) {
+                snakeGame.move();
+                if (snakeGame.isGameOver()) {
+                    isGameOver = true;
+                    Player player = new Player(snakeGame.getPlayerName(), score);
+                    playerDAO.addPlayer(player);
+                }
+                score = snakeGame.getFoodsEaten();
+                repaint();
+            }
+
             try {
                 Thread.sleep(SnakeGame.DELAY);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    
-        Player player = new Player(snakeGame.getPlayerName(), score);
-        playerDAO.addPlayer(player);
     }
-    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Snake Game");

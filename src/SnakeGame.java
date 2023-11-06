@@ -1,5 +1,7 @@
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -32,14 +34,38 @@ public class SnakeGame {
         direction = Direction.RIGHT;
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
+
+
+
         JTextField playerNameField = new JTextField();
+
+        playerNameField.addKeyListener(new KeyListener() {
+ 
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!(Character.isLetter(c) && (Character.isLowerCase(c) || Character.isUpperCase(c))) || playerNameField.getText().length() > 20) {
+                    e.consume(); // Ignore the event
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // Not needed for this case
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Not needed for this case
+            }
+        });
         panel.add(new JLabel("Enter your name:"));
         panel.add(playerNameField);
         
         int result = JOptionPane.showOptionDialog(null, panel, "Snake Game",
-                JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"OK"}, "Player");
+                JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"OK"}, null);
         
-        if (result == JOptionPane.OK_OPTION && !playerNameField.getText().isEmpty()) {
+        if (result == JOptionPane.OK_OPTION && !playerNameField.getText().isEmpty() ) {
             playerName = playerNameField.getText();
         }
          else {
