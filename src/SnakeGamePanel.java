@@ -17,13 +17,16 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+
 public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private SnakeGame snakeGame;
     private int score;
     private boolean isGameOver;
     private PlayerDAO playerDAO = new PlayerDAO();
     private ImageIcon backgroundImage;
-
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT
+    }
     private boolean isPaused;
     public SnakeGamePanel() {
         setPreferredSize(null);
@@ -45,6 +48,9 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         snakeGame = new SnakeGame();
         isGameOver = false;
         score = 0;
+
+        snakeGame.getSnake().add(new Point(5, 5)); // Head
+        snakeGame.getSnake().add(new Point(5, 6)); //
     }
 
     @Override
@@ -52,7 +58,7 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         super.paintComponent(g);
 
         // g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-        drawGrid(g); 
+        // drawGrid(g); 
         draw(g);
         drawScore(g);
         drawFoodImage(g);
@@ -100,36 +106,55 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
             Point prev = i > 0 ? snake.get(i - 1) : null;
             Point next = i < snake.size() - 1 ? snake.get(i + 1) : null;
     
+            BufferedImage snakeSegmentImage;
+            
             if (i == 0) {
-                BufferedImage snakeHeadImage = snakeGame.getSnakeHeadImage(snakeGame.getDirection());
-                if (snakeHeadImage != null) {
-                    // Check if it's the snake head and draw it 2x bigger
-                    int headSize = SnakeGame.CELL_SIZE * 2;
-                    g.drawImage(snakeHeadImage, p.x * SnakeGame.CELL_SIZE - (headSize - SnakeGame.CELL_SIZE) / 2,
-                            p.y * SnakeGame.CELL_SIZE - (headSize - SnakeGame.CELL_SIZE) / 2, headSize, headSize, this);
-                }
+                // Draw snake head based on direction
+                snakeSegmentImage = snakeGame.getSnakeHeadImage(snakeGame.getDirection());
+            } else if (i == snake.size() - 1) {
+                // Draw snake tail
+                snakeSegmentImage = getSnakeTailImage(p, prev);
             } else {
-                BufferedImage snakeBodyImage = null;
-    
-                // Determine the orientation of the body segment
-                if (prev != null && next != null) {
-                    if (prev.x == next.x) {
-                        // Vertical body segment, use the image with gaps from top and bottom
-                        snakeBodyImage = snakeGame.getVerticalBodyImage();
-                    } else if (prev.y == next.y) {
-                        // Horizontal body segment, use the image with gaps from right and left
-                        snakeBodyImage = snakeGame.getHorizontalBodyImage();
-                    }
-                }
-    
-                if (snakeBodyImage != null) {
-                    g.drawImage(snakeBodyImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
-                            SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
-                }
+                // Draw snake body
+                snakeSegmentImage = getSnakeBodyImage(prev, p, next);
             }
+    
+            g.drawImage(snakeSegmentImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
+                    SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
         }
     }
     
+    private BufferedImage getSnakeBodyImage(Point prev, Point current, Point next) {
+        // Determine the orientation of the body segment and return the appropriate image
+        if (prev.x == next.x && prev.x == current.x) {
+            return snakeGame.getVerticalBodyImage();
+        } else if (prev.y == next.y && prev.y == current.y) {
+            return snakeGame.getHorizontalBodyImage();
+        } else if ((prev.x < current.x && current.y < next.y) || (prev.y < current.y && current.x < next.x)) {
+            return snakeGame.getSnakeBodyTurnImage(Direction.RIGHT, Direction.DOWN);
+        } else if ((prev.x < current.x && current.y > next.y) || (prev.y > current.y && current.x < next.x)) {
+            return snakeGame.getSnakeBodyTurnImage(Direction.RIGHT, Direction.UP);
+        } else if ((prev.x > current.x && current.y < next.y) || (prev.y < current.y && current.x > next.x)) {
+            return snakeGame.getSnakeBodyTurnImage(Direction.LEFT, Direction.DOWN);
+        } else if ((prev.x > current.x && current.y > next.y) || (prev.y > current.y && current.x > next.x)) {
+            return snakeGame.getSnakeBodyTurnImage(Direction.LEFT, Direction.UP);
+        }
+        return null;
+    }
+    
+    private BufferedImage getSnakeTailImage(Point current, Point prev) {
+        // Determine the orientation of the tail segment and return the appropriate image
+        if (prev.x < current.x) {
+            return snakeGame.getSnakeTailImage(Direction.LEFT);
+        } else if (prev.x > current.x) {
+            return snakeGame.getSnakeTailImage(Direction.RIGHT);
+        } else if (prev.y < current.y) {
+            return snakeGame.getSnakeTailImage(Direction.UP);
+        } else if (prev.y > current.y) {
+            return snakeGame.getSnakeTailImage(Direction.DOWN);
+        }
+        return null;
+    }
     
     private void drawFood(Graphics g) {
         Point food = snakeGame.getFood();

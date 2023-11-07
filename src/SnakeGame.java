@@ -25,6 +25,10 @@ public class SnakeGame {
     private boolean isGameOver;
     private String playerName;
     private ImageIcon foodImageIcon;
+    private BufferedImage snakeBodyTurnImageRightDown;
+    private BufferedImage snakeBodyTurnImageRightUp;
+    private BufferedImage snakeBodyTurnImageLeftDown;
+    private BufferedImage snakeBodyTurnImageLeftUp;
 
     private BufferedImage foodImage;
     private BufferedImage snakeHeadUpImage;
@@ -38,7 +42,7 @@ public class SnakeGame {
         UP, DOWN, LEFT, RIGHT
     }
 
-    public SnakeGame() {
+    public  SnakeGame() {
         foodsEaten = 0;
         snake = new ArrayList<>();
         snake.add(new Point(5, 5));
@@ -55,8 +59,11 @@ public class SnakeGame {
             snakeHeadRightImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadRightImage.png"));
             verticalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/verticalBodyImage.png"));
             horizontalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/horizontalBodyImage.png"));
-
-            
+                snakeBodyTurnImageRightDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightDown.png"));
+                snakeBodyTurnImageRightUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightUp.png"));
+                snakeBodyTurnImageLeftDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftDown.png"));
+                snakeBodyTurnImageLeftUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftUp.png"));
+                
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,6 +115,28 @@ public class SnakeGame {
     public BufferedImage getSnakeBodyImage() {
         return snakeBodyImage;
     }
+
+    public BufferedImage getSnakeBodyTurnImage(SnakeGamePanel.Direction from, SnakeGamePanel.Direction to) {
+    if (from == SnakeGamePanel.Direction.RIGHT && to == SnakeGamePanel.Direction.DOWN) {
+        return snakeBodyTurnImageLeftUp;
+    } else if (from == SnakeGamePanel.Direction.RIGHT && to == SnakeGamePanel.Direction.UP) {
+        return snakeBodyTurnImageLeftUp;
+    } else if (from == SnakeGamePanel.Direction.LEFT && to == SnakeGamePanel.Direction.DOWN) {
+        return snakeBodyTurnImageRightDown;
+    } else if (from == SnakeGamePanel.Direction.LEFT && to == SnakeGamePanel.Direction.UP) {
+        return   snakeBodyTurnImageLeftDown;
+    } else if (from == SnakeGamePanel.Direction.DOWN && to == SnakeGamePanel.Direction.RIGHT) {
+        return snakeBodyTurnImageLeftUp; // Handle outer right turn when coming from DOWN
+    } else if (from == SnakeGamePanel.Direction.UP && to == SnakeGamePanel.Direction.RIGHT) {
+        return snakeBodyTurnImageLeftDown; // Handle outer right turn when coming from UP
+    } else if (from == SnakeGamePanel.Direction.DOWN && to == SnakeGamePanel.Direction.LEFT) {
+        return snakeBodyTurnImageRightUp; // Handle outer left turn when coming from DOWN
+    } else if (from == SnakeGamePanel.Direction.UP && to == SnakeGamePanel.Direction.LEFT) {
+        return snakeBodyTurnImageRightDown; // Handle outer left turn when coming from UP
+    }
+    return null; // Return null if no matching image is found
+}
+
     public Direction getDirection() {
         return direction;
     }
@@ -239,5 +268,10 @@ public class SnakeGame {
             default:
                 return null;
         }
+    }
+
+  
+    public BufferedImage getSnakeTailImage(SnakeGamePanel.Direction left) {
+        return null;
     }
 }
