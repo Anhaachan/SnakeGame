@@ -19,7 +19,6 @@ public class SnakeGame {
     static final int CELL_SIZE = 20;
     static int DELAY = 150;
     private int foodsEaten;
-    private Player player;
     private ArrayList<Point> snake;
     private Point food;
     private Direction direction;
