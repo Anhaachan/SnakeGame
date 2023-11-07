@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 
 public class SnakeGame {
     static final int GRID_SIZE = 20;
-    static final int CELL_SIZE = 20;
+    static final int CELL_SIZE = 30;
     static int DELAY = 150;
     private int foodsEaten;
     private ArrayList<Point> snake;
@@ -31,7 +31,9 @@ public class SnakeGame {
     private BufferedImage snakeHeadDownImage;
     private BufferedImage snakeHeadLeftImage;
     private BufferedImage snakeHeadRightImage;
-
+    private BufferedImage snakeBodyImage;
+    private BufferedImage verticalBodyImage;
+    private BufferedImage horizontalBodyImage;
     enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -51,6 +53,10 @@ public class SnakeGame {
             snakeHeadDownImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadDownImage.png"));
             snakeHeadLeftImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadLeftImage.png"));
             snakeHeadRightImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadRightImage.png"));
+            verticalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/verticalBodyImage.png"));
+            horizontalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/horizontalBodyImage.png"));
+
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,7 +99,15 @@ public class SnakeGame {
         isGameOver = false;
     }
 
-    
+    public BufferedImage getHorizontalBodyImage() {
+        return horizontalBodyImage;
+    }
+    public BufferedImage getVerticalBodyImage() {
+        return verticalBodyImage;
+    }
+    public BufferedImage getSnakeBodyImage() {
+        return snakeBodyImage;
+    }
     public Direction getDirection() {
         return direction;
     }

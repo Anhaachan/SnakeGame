@@ -24,7 +24,9 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     private PlayerDAO playerDAO = new PlayerDAO();
     private ImageIcon backgroundImage;
 
+    private boolean isPaused;
     public SnakeGamePanel() {
+        setPreferredSize(null);
         initializeGame();
         setPreferredSize(new Dimension(SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE,
                 SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE));
@@ -35,8 +37,8 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         Thread gameThread = new Thread(this);
         gameThread.start();
         String imagePath = "./assets/background.jpg";
-        System.out.println("Image Path: " + ClassLoader.getSystemResource(imagePath));
-        backgroundImage = new ImageIcon(ClassLoader.getSystemResource(imagePath));
+        // System.out.println("Image Path: " + ClassLoader.getSystemResource(imagePath));
+        // backgroundImage = new ImageIcon(ClassLoader.getSystemResource(imagePath));
            }
 
     private void initializeGame() {
@@ -49,13 +51,26 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-        
+        // g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+        drawGrid(g); 
         draw(g);
         drawScore(g);
         drawFoodImage(g);
     }
+    private void drawGrid(Graphics g) {
+        // Set grid color to white
+        g.setColor(Color.WHITE);
 
+        // Draw vertical grid lines
+        for (int x = 0; x <= SnakeGame.GRID_SIZE; x++) {
+            g.drawLine(x * SnakeGame.CELL_SIZE, 0, x * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE);
+        }
+
+        // Draw horizontal grid lines
+        for (int y = 0; y <= SnakeGame.GRID_SIZE; y++) {
+            g.drawLine(0, y * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE, y * SnakeGame.CELL_SIZE);
+        }
+    }
     private void drawFoodImage(Graphics g) {
         Point food = snakeGame.getFood();
         Image foodImage = snakeGame.getFoodImageIcon().getImage();
@@ -77,30 +92,46 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
             drawFood(g);
         }
     }
-
     private void drawSnake(Graphics g) {
         ArrayList<Point> snake = snakeGame.getSnake();
     
         for (int i = 0; i < snake.size(); i++) {
             Point p = snake.get(i);
+            Point prev = i > 0 ? snake.get(i - 1) : null;
+            Point next = i < snake.size() - 1 ? snake.get(i + 1) : null;
+    
             if (i == 0) {
                 BufferedImage snakeHeadImage = snakeGame.getSnakeHeadImage(snakeGame.getDirection());
                 if (snakeHeadImage != null) {
-                    g.drawImage(snakeHeadImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
-                            SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
+                    // Check if it's the snake head and draw it 2x bigger
+                    int headSize = SnakeGame.CELL_SIZE * 2;
+                    g.drawImage(snakeHeadImage, p.x * SnakeGame.CELL_SIZE - (headSize - SnakeGame.CELL_SIZE) / 2,
+                            p.y * SnakeGame.CELL_SIZE - (headSize - SnakeGame.CELL_SIZE) / 2, headSize, headSize, this);
                 }
             } else {
-                if (i % 2 == 0) {
-                    g.setColor(Color.GREEN);
-                } else {
-                    g.setColor(Color.YELLOW);
+                BufferedImage snakeBodyImage = null;
+    
+                // Determine the orientation of the body segment
+                if (prev != null && next != null) {
+                    if (prev.x == next.x) {
+                        // Vertical body segment, use the image with gaps from top and bottom
+                        snakeBodyImage = snakeGame.getVerticalBodyImage();
+                    } else if (prev.y == next.y) {
+                        // Horizontal body segment, use the image with gaps from right and left
+                        snakeBodyImage = snakeGame.getHorizontalBodyImage();
+                    }
                 }
-                g.fillRect(p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
-                        SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE);
+    
+                if (snakeBodyImage != null) {
+                    g.drawImage(snakeBodyImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
+                            SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
+                }
             }
         }
     }
-       private void drawFood(Graphics g) {
+    
+    
+    private void drawFood(Graphics g) {
         Point food = snakeGame.getFood();
         BufferedImage foodImage = snakeGame.getFoodImage();
 
@@ -189,6 +220,8 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if (isGameOver) {
+
+
             if (keyCode == KeyEvent.VK_R) {
                 initializeGame();
                 isGameOver = false;
@@ -199,7 +232,11 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
                     System.exit(0);
                 }
             }
-        } else {
+        } else
+        if (keyCode == KeyEvent.VK_P) {
+            isPaused = !isPaused; // Toggle the pause state when 'P' key is pressed
+        } else
+        {
             switch (keyCode) {
                 case KeyEvent.VK_UP:
                     snakeGame.setDirection(SnakeGame.Direction.UP);
@@ -224,11 +261,10 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     @Override
     public void keyReleased(KeyEvent e) {
     }
-
     @Override
     public void run() {
         while (true) {
-            if (!isGameOver) {
+            if (!isPaused && !isGameOver) {
                 snakeGame.move();
                 if (snakeGame.isGameOver()) {
                     isGameOver = true;
