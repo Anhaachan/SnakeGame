@@ -118,22 +118,14 @@ public class SnakeGame {
 
     public BufferedImage getSnakeBodyTurnImage(SnakeGamePanel.Direction from, SnakeGamePanel.Direction to) {
     if (from == SnakeGamePanel.Direction.RIGHT && to == SnakeGamePanel.Direction.DOWN) {
-        return snakeBodyTurnImageLeftUp;
+        return snakeBodyTurnImageLeftUp;//bolson
     } else if (from == SnakeGamePanel.Direction.RIGHT && to == SnakeGamePanel.Direction.UP) {
-        return snakeBodyTurnImageLeftUp;
+        return snakeBodyTurnImageRightUp;//bolson
     } else if (from == SnakeGamePanel.Direction.LEFT && to == SnakeGamePanel.Direction.DOWN) {
-        return snakeBodyTurnImageRightDown;
+        return snakeBodyTurnImageLeftDown;//bolson
     } else if (from == SnakeGamePanel.Direction.LEFT && to == SnakeGamePanel.Direction.UP) {
-        return   snakeBodyTurnImageLeftDown;
-    } else if (from == SnakeGamePanel.Direction.DOWN && to == SnakeGamePanel.Direction.RIGHT) {
-        return snakeBodyTurnImageLeftUp; // Handle outer right turn when coming from DOWN
-    } else if (from == SnakeGamePanel.Direction.UP && to == SnakeGamePanel.Direction.RIGHT) {
-        return snakeBodyTurnImageLeftDown; // Handle outer right turn when coming from UP
-    } else if (from == SnakeGamePanel.Direction.DOWN && to == SnakeGamePanel.Direction.LEFT) {
-        return snakeBodyTurnImageRightUp; // Handle outer left turn when coming from DOWN
-    } else if (from == SnakeGamePanel.Direction.UP && to == SnakeGamePanel.Direction.LEFT) {
-        return snakeBodyTurnImageRightDown; // Handle outer left turn when coming from UP
-    }
+        return   snakeBodyTurnImageRightDown; //bolson
+    } 
     return null; // Return null if no matching image is found
 }
 
@@ -258,13 +250,13 @@ public class SnakeGame {
     private Direction opposite(Direction dir) {
         switch (dir) {
             case UP:
-                return Direction.DOWN;
-            case DOWN:
                 return Direction.UP;
+            case DOWN:
+                return Direction.DOWN;
             case LEFT:
-                return Direction.RIGHT;
-            case RIGHT:
                 return Direction.LEFT;
+            case RIGHT:
+                return Direction.RIGHT;
             default:
                 return null;
         }

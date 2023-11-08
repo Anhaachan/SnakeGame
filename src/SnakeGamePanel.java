@@ -130,13 +130,28 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
             return snakeGame.getVerticalBodyImage();
         } else if (prev.y == next.y && prev.y == current.y) {
             return snakeGame.getHorizontalBodyImage();
-        } else if ((prev.x < current.x && current.y < next.y) || (prev.y < current.y && current.x < next.x)) {
+            /*  (prev.x < current.x && current.y < next.y)    (prev.y < current.y && current.x < next.x)
+             * 
+             * (prev.x < current.x && current.y > next.y)      (prev.y > current.y && current.x < next.x)
+             * 
+             * (prev.x > current.x && current.y < next.y)        (prev.y < current.y && current.x > next.x)
+             * 
+             * (prev.x > current.x && current.y > next.y)       (prev.y > current.y && current.x > next.x) 
+             * 
+             * 
+             * 
+             */
+            
+        } else if ( (prev.x > current.x && current.y > next.y)   || (prev.y < current.y && current.x < next.x)) {
             return snakeGame.getSnakeBodyTurnImage(Direction.RIGHT, Direction.DOWN);
-        } else if ((prev.x < current.x && current.y > next.y) || (prev.y > current.y && current.x < next.x)) {
+
+        } else if ((prev.x < current.x && current.y > next.y)  ||   (prev.y < current.y && current.x > next.x)) {
             return snakeGame.getSnakeBodyTurnImage(Direction.RIGHT, Direction.UP);
-        } else if ((prev.x > current.x && current.y < next.y) || (prev.y < current.y && current.x > next.x)) {
+
+        } else if ((prev.x > current.x && current.y < next.y)||  (prev.y > current.y && current.x < next.x)) {
             return snakeGame.getSnakeBodyTurnImage(Direction.LEFT, Direction.DOWN);
-        } else if ((prev.x > current.x && current.y > next.y) || (prev.y > current.y && current.x > next.x)) {
+            
+        } else if ( (prev.x < current.x && current.y < next.y) || (prev.y > current.y && current.x > next.x)  ) {
             return snakeGame.getSnakeBodyTurnImage(Direction.LEFT, Direction.UP);
         }
         return null;
@@ -294,9 +309,10 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
                 if (snakeGame.isGameOver()) {
                     isGameOver = true;
                     Player player = new Player(snakeGame.getPlayerName(), score);
-                    playerDAO.addPlayer(player);
+                    // playerDAO.addPlayer(player);
+                    System.out.println(player.toString());
                 }
-                score = snakeGame.getFoodsEaten();
+                score = snakeGame.getFoodsEaten();  
                 repaint();
             }
 
