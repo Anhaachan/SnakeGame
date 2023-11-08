@@ -3,8 +3,10 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -32,12 +34,20 @@ public class SnakeGame {
 
     private BufferedImage foodImage;
     private BufferedImage snakeHeadUpImage;
-    private BufferedImage snakeHeadDownImage;
+    private BufferedImage snakeHeadDownImage;   
     private BufferedImage snakeHeadLeftImage;
     private BufferedImage snakeHeadRightImage;
     private BufferedImage snakeBodyImage;
     private BufferedImage verticalBodyImage;
     private BufferedImage horizontalBodyImage;
+    
+    private BufferedImage snakeTailImageTop;
+    private BufferedImage snakeTailImageLeft;
+    private BufferedImage snakeTailImageRight;
+    private BufferedImage snakeTailImageDown;
+    private BufferedImage snakeTailImage;
+    private LinkedList<Point> snakeTail;
+
     enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -63,11 +73,18 @@ public class SnakeGame {
                 snakeBodyTurnImageRightUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightUp.png"));
                 snakeBodyTurnImageLeftDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftDown.png"));
                 snakeBodyTurnImageLeftUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftUp.png"));
-                
+
+                   snakeTailImageTop = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailUp.png"));
+                   snakeTailImageLeft = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailLeft.png"));
+                   snakeTailImageRight = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailRight.png"));
+                   snakeTailImageDown = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailDown.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+        snakeTail = new LinkedList<>();
+        snakeTail.add(new Point(5, 4)); 
         JTextField playerNameField = new JTextField();
 
         playerNameField.addKeyListener(new KeyListener() {
@@ -104,8 +121,12 @@ public class SnakeGame {
         }
 
         isGameOver = false;
-    }
 
+        
+    }
+    public LinkedList<Point> getSnakeTail() {
+        return snakeTail;
+    }
     public BufferedImage getHorizontalBodyImage() {
         return horizontalBodyImage;
     }
@@ -114,6 +135,9 @@ public class SnakeGame {
     }
     public BufferedImage getSnakeBodyImage() {
         return snakeBodyImage;
+    }
+    public BufferedImage getSnakeTailImage() {
+        return snakeTailImage;
     }
 
     public BufferedImage getSnakeBodyTurnImage(SnakeGamePanel.Direction from, SnakeGamePanel.Direction to) {
@@ -186,6 +210,10 @@ public class SnakeGame {
                 case RIGHT:
                     newHead.x++;
                     break;
+            }
+            if (!snakeTail.isEmpty()) {
+                snakeTail.add(1, new Point(head.x, head.y));
+                snakeTail.removeLast();
             }
 
             if (newHead.equals(food)) {
@@ -262,8 +290,17 @@ public class SnakeGame {
         }
     }
 
-  
-    public BufferedImage getSnakeTailImage(SnakeGamePanel.Direction left) {
-        return null;
+    public BufferedImage getSnakeTailImage(SnakeGamePanel.Direction direction) {
+        if (direction == SnakeGamePanel.Direction.UP) {
+            return snakeTailImageTop;
+        } else if (direction == SnakeGamePanel.Direction.LEFT) {
+            return snakeTailImageLeft;
+        } else if (direction == SnakeGamePanel.Direction.RIGHT) {
+            return snakeTailImageRight;
+        } else if (direction == SnakeGamePanel.Direction.DOWN) {
+            return snakeTailImageDown;
+        }
+        return null; // Return null if no matching image is found
     }
+    
 }

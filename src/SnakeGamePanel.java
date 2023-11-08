@@ -41,7 +41,7 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         gameThread.start();
         String imagePath = "./assets/background.jpg";
         // System.out.println("Image Path: " + ClassLoader.getSystemResource(imagePath));
-        // backgroundImage = new ImageIcon(ClassLoader.getSystemResource(imagePath));
+        backgroundImage = new ImageIcon(ClassLoader.getSystemResource(imagePath));
            }
 
     private void initializeGame() {
@@ -50,14 +50,14 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         score = 0;
 
         snakeGame.getSnake().add(new Point(5, 5)); // Head
-        snakeGame.getSnake().add(new Point(5, 6)); //
+        snakeGame.getSnake().add(new Point(5, 6)); //   
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
         // drawGrid(g); 
         draw(g);
         drawScore(g);
@@ -107,23 +107,29 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
             Point next = i < snake.size() - 1 ? snake.get(i + 1) : null;
     
             BufferedImage snakeSegmentImage;
-            
+    
             if (i == 0) {
                 // Draw snake head based on direction
                 snakeSegmentImage = snakeGame.getSnakeHeadImage(snakeGame.getDirection());
+                // Calculate the scaled size (slightly bigger than the original size)
+                int scaledSize = (int) (SnakeGame.CELL_SIZE * 1.2);
+                // Calculate the offset to center the image within the cell
+                int xOffset = (SnakeGame.CELL_SIZE - scaledSize) / 2;
+                int yOffset = (SnakeGame.CELL_SIZE - scaledSize) / 2;
+                // Draw the scaled snake head image with offset
+                g.drawImage(snakeSegmentImage, p.x * SnakeGame.CELL_SIZE + xOffset, p.y * SnakeGame.CELL_SIZE + yOffset, scaledSize, scaledSize, this);
             } else if (i == snake.size() - 1) {
                 // Draw snake tail
                 snakeSegmentImage = getSnakeTailImage(p, prev);
+                g.drawImage(snakeSegmentImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
             } else {
                 // Draw snake body
                 snakeSegmentImage = getSnakeBodyImage(prev, p, next);
+                g.drawImage(snakeSegmentImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
             }
-    
-            g.drawImage(snakeSegmentImage, p.x * SnakeGame.CELL_SIZE, p.y * SnakeGame.CELL_SIZE,
-                    SnakeGame.CELL_SIZE, SnakeGame.CELL_SIZE, this);
         }
     }
-    
+     
     private BufferedImage getSnakeBodyImage(Point prev, Point current, Point next) {
         // Determine the orientation of the body segment and return the appropriate image
         if (prev.x == next.x && prev.x == current.x) {
@@ -260,8 +266,7 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if (isGameOver) {
-
-
+            // Game over logic
             if (keyCode == KeyEvent.VK_R) {
                 initializeGame();
                 isGameOver = false;
@@ -272,28 +277,31 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
                     System.exit(0);
                 }
             }
-        } else
-        if (keyCode == KeyEvent.VK_P) {
+        } else if (keyCode == KeyEvent.VK_P) {
             isPaused = !isPaused; // Toggle the pause state when 'P' key is pressed
-        } else
-        {
-            switch (keyCode) {
-                case KeyEvent.VK_UP:
-                    snakeGame.setDirection(SnakeGame.Direction.UP);
-                    break;
-                case KeyEvent.VK_DOWN:
-                    snakeGame.setDirection(SnakeGame.Direction.DOWN);
-                    break;
-                case KeyEvent.VK_LEFT:
-                    snakeGame.setDirection(SnakeGame.Direction.LEFT);
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    snakeGame.setDirection(SnakeGame.Direction.RIGHT);
-                    break;
+        } else {
+            // Handle direction changes
+            SnakeGame.Direction currentDirection = snakeGame.getDirection();
+            SnakeGame.Direction newDirection = null;
+    
+            // Set new direction based on pressed key
+            if (keyCode == KeyEvent.VK_UP && currentDirection != SnakeGame.Direction.DOWN) {
+                newDirection = SnakeGame.Direction.UP;
+            } else if (keyCode == KeyEvent.VK_DOWN && currentDirection != SnakeGame.Direction.UP) {
+                newDirection = SnakeGame.Direction.DOWN;
+            } else if (keyCode == KeyEvent.VK_LEFT && currentDirection != SnakeGame.Direction.RIGHT) {
+                newDirection = SnakeGame.Direction.LEFT;
+            } else if (keyCode == KeyEvent.VK_RIGHT && currentDirection != SnakeGame.Direction.LEFT) {
+                newDirection = SnakeGame.Direction.RIGHT;
+            }
+    
+            // Update direction if a valid new direction is determined
+            if (newDirection != null) {
+                snakeGame.setDirection(newDirection);
             }
         }
     }
-
+    
     @Override
     public void keyTyped(KeyEvent e) {
     }
