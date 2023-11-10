@@ -67,17 +67,19 @@ public class SnakeGame {
             snakeHeadDownImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadDownImage.png"));
             snakeHeadLeftImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadLeftImage.png"));
             snakeHeadRightImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadRightImage.png"));
+         
             verticalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/verticalBodyImage.png"));
             horizontalBodyImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/horizontalBodyImage.png"));
-                snakeBodyTurnImageRightDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightDown.png"));
-                snakeBodyTurnImageRightUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightUp.png"));
-                snakeBodyTurnImageLeftDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftDown.png"));
-                snakeBodyTurnImageLeftUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftUp.png"));
+               
+            snakeBodyTurnImageRightDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightDown.png"));
+            snakeBodyTurnImageRightUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnRightUp.png"));
+            snakeBodyTurnImageLeftDown = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftDown.png"));
+            snakeBodyTurnImageLeftUp = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeBodyTurnLeftUp.png"));
 
-                   snakeTailImageTop = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailUp.png"));
-                   snakeTailImageLeft = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailLeft.png"));
-                   snakeTailImageRight = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailRight.png"));
-                   snakeTailImageDown = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailDown.png"));
+            snakeTailImageTop = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailUp.png"));
+            snakeTailImageLeft = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailLeft.png"));
+            snakeTailImageRight = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailRight.png"));
+            snakeTailImageDown = ImageIO.read( ClassLoader.getSystemResourceAsStream("./assets/snakeTailDown.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
