@@ -58,7 +58,8 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         super.paintComponent(g);
 
         g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-        drawGrid(g); 
+        // zuraasnuudig zurah
+        // drawGrid(g); 
         draw(g);
         drawScore(g);
     }

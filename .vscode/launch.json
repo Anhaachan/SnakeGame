@@ -1,0 +1,20 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+      {
+        "type": "java",
+        "name": "SnakeGamePanel",
+        "request": "launch",
+        "mainClass": "SnakeGamePanel",
+        "projectName": "GitHub_SnakeGame"
+      },
+      {
+        "name": "Java Snake Game",
+        "type": "java",
+        "request": "launch",
+        "mainClass": "SnakeGamePanel.java",
+        "projectName": "snakegame"
+      }
+    ]
+  }
+  
