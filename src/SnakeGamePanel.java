@@ -3,7 +3,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -64,20 +63,24 @@ public class SnakeGamePanel extends JPanel implements KeyListener, Runnable {
         drawScore(g);
     }
 
-    private void drawGrid(Graphics g) {
-        // Set grid color to white
-        g.setColor(Color.WHITE);
-
-        // Draw vertical grid lines
-        for (int x = 0; x <= SnakeGame.GRID_SIZE; x++) {
-            g.drawLine(x * SnakeGame.CELL_SIZE, 0, x * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE);
+    /*
+     * 
+     private void drawGrid(Graphics g) {
+         // Set grid color to white
+         g.setColor(Color.WHITE);
+         
+         // Draw vertical grid lines
+         for (int x = 0; x <= SnakeGame.GRID_SIZE; x++) {
+             g.drawLine(x * SnakeGame.CELL_SIZE, 0, x * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE);
+            }
+            
+            // Draw horizontal grid lines
+            for (int y = 0; y <= SnakeGame.GRID_SIZE; y++) {
+                g.drawLine(0, y * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE, y * SnakeGame.CELL_SIZE);
+            }
         }
+    */
 
-        // Draw horizontal grid lines
-        for (int y = 0; y <= SnakeGame.GRID_SIZE; y++) {
-            g.drawLine(0, y * SnakeGame.CELL_SIZE, SnakeGame.GRID_SIZE * SnakeGame.CELL_SIZE, y * SnakeGame.CELL_SIZE);
-        }
-    }
 
 
     private void drawScore(Graphics g) {

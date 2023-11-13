@@ -3,14 +3,12 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,7 +24,7 @@ public class SnakeGame {
     private Direction direction;
     private boolean isGameOver;
     private String playerName;
-    private ImageIcon foodImageIcon;
+    private BufferedImage foodImageIcon;
     private BufferedImage snakeBodyTurnImageRightDown;
     private BufferedImage snakeBodyTurnImageRightUp;
     private BufferedImage snakeBodyTurnImageLeftDown;
@@ -53,15 +51,19 @@ public class SnakeGame {
     }
 
     public  SnakeGame() {
-        foodsEaten = 0;
         snake = new ArrayList<>();
-        snake.add(new Point(5, 5));
-        food = new Point(15, 15);
+        snakeTail = new LinkedList<>();
+        
+        foodsEaten = 0;
         direction = Direction.RIGHT;
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 1));
-        foodImageIcon = new ImageIcon(ClassLoader.getSystemResource("./assets/food.png"));
+        
+        food = new Point(15, 15);
+        snake.add(new Point(5, 5));
+        snakeTail.add(new Point(5, 4)); 
+
+       
         try {
+            foodImageIcon = ImageIO.read(ClassLoader.getSystemResource("./assets/food.png"));
             foodImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/food.png"));
             snakeHeadUpImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadUpImage.png"));
             snakeHeadDownImage = ImageIO.read(ClassLoader.getSystemResourceAsStream("./assets/snakeHeadDownImage.png"));
@@ -84,19 +86,19 @@ public class SnakeGame {
             e.printStackTrace();
         }
 
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
 
-        snakeTail = new LinkedList<>();
-        snakeTail.add(new Point(5, 4)); 
         JTextField playerNameField = new JTextField();
 
         playerNameField.addKeyListener(new KeyListener() {
-
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 if (!(Character.isLetter(c) && (Character.isLowerCase(c) || Character.isUpperCase(c)))
                         || playerNameField.getText().length() > 20) {
-                    e.consume(); // Ignore the event
+                            //bichij bolohgui bolgono
+                            e.consume(); // Ignore the event
                 }
             }
 
@@ -110,6 +112,7 @@ public class SnakeGame {
                 // Not needed for this case
             }
         });
+
         panel.add(new JLabel("Enter your name:"));
         panel.add(playerNameField);
 
@@ -126,6 +129,7 @@ public class SnakeGame {
 
         
     }
+    
     public LinkedList<Point> getSnakeTail() {
         return snakeTail;
     }
@@ -174,7 +178,7 @@ public class SnakeGame {
         }
     }
 
-    public ImageIcon getFoodImageIcon() {
+    public BufferedImage getFoodImageIcon() {
         return foodImageIcon;
     }
 
